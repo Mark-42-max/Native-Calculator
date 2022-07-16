@@ -1,54 +1,122 @@
-import { StatusBar } from 'expo-status-bar';
+import React, {useState, useEffect} from 'react';
 import { StyleSheet, Text, View, Button, TouchableOpacity } from 'react-native';
 
 export default function App() {
+
+  const Operators = ['+', '-', '*', '/', '.'];
+  const DelChar = 'DEL';
+  const ClearScreen = 'C';
+
+  const [countField, setCountField] = useState(0);
+  const [resultField, setResultField] = useState();
+
+  useEffect(() => {
+    console.log(typeof countField, countField);
+  }, [countField, resultField]);
+
+  const validate = value => {
+    let lastChar = value.slice(-1);
+    if (Operators.includes(lastChar)) {
+      return false;
+    }
+
+    return true;
+  }
+
+  const handlePress = (text) => {
+    if(text === '='){
+      return validate(countField) && calculateResult(countField);
+    }
+
+    if(text === ClearScreen){
+      setCountField(0);
+      setResultField();
+      return;
+    }
+
+    if(text === DelChar){
+
+      setCountField(count => {
+        let stringifiedCount = count.toString();
+
+        if(stringifiedCount.length === 1 || stringifiedCount.length === 0){
+          return 0;
+        }
+
+        return stringifiedCount.slice(0, -1);
+      });
+      return;
+    }
+
+    setCountField(count => {
+      if(count === 0){
+        if(Operators.includes(text)){
+          return count + text;
+        }
+        return text.toString();
+      }
+      if(Number.isInteger(text) && !isNaN(text)){
+        return count + text.toString();
+      }
+
+      if(Operators.includes(text)){
+        let lastChar = count.slice(-1);
+        if(Operators.includes(lastChar)){
+          return count;
+        }
+        return count + text;
+      }
+
+      return count + text;
+    });
+  }
+
+  const calculateResult = count => {
+    console.log(count);
+    let result = eval(count);
+    setResultField(result);
+    setCountField(result.toString());
+  }
+
+  let rows = [];
+
+  for(let i = 0; i < 4; i++) {
+    let row = [];
+    let nums = [[1, 2, 3], [4, 5, 6], [7, 8, 9], ['.', 0, '=']];
+    for(let j = 0; j < 3; j++){
+      row.push(<TouchableOpacity onPress={() => handlePress(nums[i][j])} key={j} style={styles.buttons}>
+        <Text style={styles.btnText}>{nums[i][j]}</Text>
+      </TouchableOpacity>);
+    }
+
+    rows.push(<View key={i} style={styles.row}>{row}</View>);
+  }
+
+  let ops = [];
+  let operations = [DelChar, ClearScreen, ...Operators];
+
+  for(let i = 0; i < 6; i++){
+    ops.push(<TouchableOpacity onPress = {() => handlePress(operations[i])} key={i} style={styles.touch}>
+      <Text style={[styles.btnText, styles.white]}>{operations[i]}</Text>
+    </TouchableOpacity>);
+  }
+
   return (
     <View style={styles.container}>
-      <View style={styles.result}>
-        <Text style={styles.resultText}>121</Text>
-      </View>
       <View style={styles.calculation}>
-        <Text style={styles.calculationText}>11 * 11</Text>
+        <Text style={styles.calculationText}>{countField}</Text>
+      </View>
+      <View style={styles.result}>
+        <Text style={styles.resultText}>{resultField}</Text>
       </View>
       <View style={styles.buttons}>
         <View style={styles.numbers}>
 
-          <View style={styles.row}>
-            <TouchableOpacity style={styles.touch}>
-              <Text>0</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.touch}>
-              <Text>0</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.touch}>
-              <Text>0</Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.row}>
-            <Button title="0" />
-            <Button title="0" />
-            <Button title="0" />
-          </View>
-
-          <View style={styles.row}>
-            <Button title="0" />
-            <Button title="0" />
-            <Button title="0" />
-          </View>
-
-          <View style={styles.row}>
-            <Button title="0" />
-            <Button title="0" />
-            <Button title="0" />
-          </View>
+        {rows}
 
         </View>
         <View style={styles.operators}>
-          <Button title='+'/>
-          <Button title='+'/>
-          <Button title='+'/>
-          <Button title='+'/>
+          {ops}
         </View>
       </View>
     </View>
@@ -60,26 +128,26 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   result: {
-    flex: 2,
-    backgroundColor: 'red',
+    flex: 1,
+    backgroundColor: '#F1F1F1',
     justifyContent: 'flex-end',
     alignItems: 'flex-end',
     paddingHorizontal: 10,
   },
   calculation: {
-    flex: 1,
-    backgroundColor: 'blue',
+    flex: 2,
+    backgroundColor: 'white',
     justifyContent: 'flex-end',
     alignItems: 'flex-end',
     paddingHorizontal: 10,
   },
   resultText: {
-    fontSize: 30,
-    color: 'white',
+    fontSize: 50,
+    color: 'black',
   },
   calculationText: {
     fontSize: 40,
-    color: 'white',
+    color: 'black',
   },
   buttons: {
     flex: 7,
@@ -87,12 +155,14 @@ const styles = StyleSheet.create({
   },
   numbers: {
     flex: 3,
-    backgroundColor: 'yellow',
+    backgroundColor: '#7FFFD4',
+    paddingLeft: 40,
   },
   operators: {
-    flex: 1,
+    flex: 2,
     justifyContent: 'space-around',
     backgroundColor: 'black',
+    textAlign: 'center',
   },
   row: {
     flexDirection: 'row',
@@ -103,7 +173,12 @@ const styles = StyleSheet.create({
   touch:{
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'white',
-    alignSelf: 'stretch',
+    backgroundColor: 'black',
+  },
+  btnText: {
+    fontSize: 30,
+  },
+  white: {
+    color: 'white',
   }
 });
