@@ -1,19 +1,18 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import { StyleSheet, Text, View, Button, TouchableOpacity } from 'react-native';
 
 export default function App() {
 
+  // Declare some immutable literals to use in the code
   const Operators = ['+', '-', '*', '/', '.'];
   const DelChar = 'DEL';
   const ClearScreen = 'C';
 
+  //State variables
   const [countField, setCountField] = useState(0);
   const [resultField, setResultField] = useState();
 
-  useEffect(() => {
-    console.log(typeof countField, countField);
-  }, [countField, resultField]);
-
+  //Function to Validate input 
   const validate = value => {
     let lastChar = value.slice(-1);
     if (Operators.includes(lastChar)) {
@@ -23,17 +22,22 @@ export default function App() {
     return true;
   }
 
+  //Function to handle button clicks
   const handlePress = (text) => {
+
+    //If the button is a equals button, validate and calculate the result
     if(text === '='){
       return validate(countField) && calculateResult(countField);
     }
 
+    //If the button is a clear button, clear the screen
     if(text === ClearScreen){
       setCountField(0);
       setResultField();
       return;
     }
 
+    //If the button is a delete button, delete the last character
     if(text === DelChar){
 
       setCountField(count => {
@@ -48,17 +52,24 @@ export default function App() {
       return;
     }
 
+    //set calculate field for any other button inputs
     setCountField(count => {
+
+      //If the count field is empty, set it to the value of the button
+      //Exclude the operations buttons and add them as strings
       if(count === 0){
         if(Operators.includes(text)){
           return count + text;
         }
         return text.toString();
       }
+      //If the count field is not empty, add the value of the button to the count field
+      //as string
       if(Number.isInteger(text) && !isNaN(text)){
         return count + text.toString();
       }
 
+      //Validate if two operation buttons are pressed at back to back
       if(Operators.includes(text)){
         let lastChar = count.slice(-1);
         if(Operators.includes(lastChar)){
@@ -67,17 +78,20 @@ export default function App() {
         return count + text;
       }
 
+      //Add the value of the button to the count field as string elsewhere
       return count + text;
     });
   }
 
+  //Function to calculate the result
   const calculateResult = count => {
-    console.log(count);
     let result = eval(count);
     setResultField(result);
     setCountField(result.toString());
   }
 
+  //populate number of rows dynamically and for each row element or column create a 
+  //touchfield
   let rows = [];
 
   for(let i = 0; i < 4; i++) {
@@ -92,6 +106,7 @@ export default function App() {
     rows.push(<View key={i} style={styles.row}>{row}</View>);
   }
 
+  //Operations buttons populate dynamically
   let ops = [];
   let operations = [DelChar, ClearScreen, ...Operators];
 
@@ -112,10 +127,12 @@ export default function App() {
       <View style={styles.buttons}>
         <View style={styles.numbers}>
 
+        {/* Map the rows */}
         {rows}
 
         </View>
         <View style={styles.operators}>
+          {/* Map the operators */}
           {ops}
         </View>
       </View>
