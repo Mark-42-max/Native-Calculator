@@ -42,11 +42,12 @@ export default StyleSheet.create({
     buttons: {
         flex: 7,
         flexDirection: 'row',
+        justifyContent: 'center',
     },
     numbers: {
-        flex: 3,
+        flex: 5,
         backgroundColor: '#7FFFD4',
-        paddingLeft: 40,
+        justifyContent: 'center',
     },
     operators: {
         flex: 2,
