@@ -125,10 +125,14 @@ export default function App() {
 
   return (
     <SafeAreaView style={styles.container}>
+
       {getCalc().length > 0 ?
       <ScrollView style={styles.history}>
       {getCalc().map(item => <Text key={item} style={styles.historyText}>{item}{"\n"}</Text>)}
-    </ScrollView>: null}
+    </ScrollView>
+    : null}
+
+
       <View style={styles.calculation}>
         <Text style={styles.calculationText}>{countField}</Text>
       </View>
