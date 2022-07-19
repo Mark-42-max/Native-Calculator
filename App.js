@@ -1,5 +1,7 @@
-import React, {useState} from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import React, {useState, useEffect} from 'react';
+import { Text, View, TouchableOpacity , ScrollView, SafeAreaView} from 'react-native';
+import {saveCalc, getCalc} from './App.history.js';
+import styles from './App.styles.js';
 
 export default function App() {
 
@@ -11,6 +13,10 @@ export default function App() {
   //State variables
   const [countField, setCountField] = useState(0);
   const [resultField, setResultField] = useState();
+
+  useEffect(() => {
+    console.log(getCalc());
+  },[countField]);
 
   //Function to Validate input 
   const validate = value => {
@@ -88,6 +94,7 @@ export default function App() {
     let result = eval(count);
     setResultField(result);
     setCountField(result.toString());
+    saveCalc(result);
   }
 
   //populate number of rows dynamically and for each row element or column create a 
@@ -117,7 +124,11 @@ export default function App() {
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      {getCalc().length > 0 ?
+      <ScrollView style={styles.history}>
+      {getCalc().map(item => <Text key={item} style={styles.historyText}>{item}{"\n"}</Text>)}
+    </ScrollView>: null}
       <View style={styles.calculation}>
         <Text style={styles.calculationText}>{countField}</Text>
       </View>
@@ -136,66 +147,7 @@ export default function App() {
           {ops}
         </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  result: {
-    flex: 1,
-    backgroundColor: '#F1F1F1',
-    justifyContent: 'flex-end',
-    alignItems: 'flex-end',
-    paddingHorizontal: 10,
-  },
-  calculation: {
-    flex: 2,
-    backgroundColor: 'white',
-    justifyContent: 'flex-end',
-    alignItems: 'flex-end',
-    paddingHorizontal: 10,
-  },
-  resultText: {
-    fontSize: 50,
-    color: 'black',
-  },
-  calculationText: {
-    fontSize: 40,
-    color: 'black',
-  },
-  buttons: {
-    flex: 7,
-    flexDirection: 'row',
-  },
-  numbers: {
-    flex: 3,
-    backgroundColor: '#7FFFD4',
-    paddingLeft: 40,
-  },
-  operators: {
-    flex: 2,
-    justifyContent: 'space-around',
-    backgroundColor: 'black',
-    textAlign: 'center',
-  },
-  row: {
-    flexDirection: 'row',
-    flex: 1,
-    justifyContent: 'space-around',
-    alignItems: 'center',
-  },
-  touch:{
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'black',
-  },
-  btnText: {
-    fontSize: 30,
-  },
-  white: {
-    color: 'white',
-  }
-});
