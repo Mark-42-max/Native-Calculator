@@ -1,6 +1,8 @@
 import React, {useState, useEffect} from 'react';
 import { Text, View, TouchableOpacity , ScrollView, SafeAreaView} from 'react-native';
 import {saveCalc, getCalc} from './App.history.js';
+import {StateProviders} from './Context/StateContext.js';
+import {Test} from './Test';
 import styles from './App.styles.js';
 
 export default function App() {
@@ -124,6 +126,7 @@ export default function App() {
   }
 
   return (
+    <StateProviders>
     <SafeAreaView style={styles.container}>
 
       {getCalc().length > 0 ?
@@ -152,6 +155,8 @@ export default function App() {
         </View>
       </View>
     </SafeAreaView>
+    <Test />
+    </StateProviders>
   );
 }
 
